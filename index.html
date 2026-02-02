@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Critical Speed Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            letter-spacing: -0.02em;
+        }
+
+        h1 a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.95);
+            letter-spacing: 0.01em;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 968px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .test-input {
+            background: #f7f9fc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e7ff;
+            transition: all 0.3s ease;
+        }
+
+        .test-input:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        }
+
+        .test-input h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 2fr;
+            gap: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e7ff;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="number"]::placeholder {
+            color: rgba(0, 0, 0, 0.3);
+            opacity: 1;
+        }
+
+        .btn {
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #667eea);
+            background-size: 300% 300%;
+            animation: gradientCycle 3s ease infinite;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+        }
+
+        @keyframes gradientCycle {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #f7f9fc 0%, #e0e7ff 100%);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .result-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+        }
+
+        .result-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .result-unit {
+            font-size: 1rem;
+            color: #888;
+            margin-left: 5px;
+        }
+
+        #mainChart, #distanceChart {
+            width: 100%;
+            height: 400px;
+            margin-top: 20px;
+        }
+
+        .predictor {
+            margin-top: 30px;
+        }
+
+        .predictor-input {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .predictor-input > div {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .prediction-result {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .prediction-result.show {
+            opacity: 1;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            color: #444;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+
+        .info-box strong {
+            color: #667eea;
+        }
+
+        .zones-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .zone-card {
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .zone-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .zone-card:hover::before {
+            opacity: 1;
+        }
+
+        .zone-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .zone-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .zone-range {
+            font-size: 0.9rem;
+            opacity: 0.95;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .zone-speed {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 10px 0;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .zone-pace {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Zone-specific colors */
+        .zone-1 { background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%); }
+        .zone-2 { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); }
+        .zone-3 { background: linear-gradient(135deg, #ecc94b 0%, #d69e2e 100%); }
+        .zone-4 { background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); }
+        .zone-5 { background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%); }
+        .zone-6 { background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%); }
+
+        .test-input {
+            background: linear-gradient(135deg, #f7f9fc 0%, #ffffff 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e7ff;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .test-input:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .test-input h3 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .btn-delete {
+            background: linear-gradient(-45deg, #f56565, #e53e3e, #fc8181, #f56565);
+            background-size: 300% 300%;
+            animation: gradientCycle 3s ease infinite;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(245, 101, 101, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-delete::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+
+        .btn-delete:hover::before {
+            width: 100px;
+            height: 100px;
+        }
+
+        .btn-delete:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 4px 15px rgba(245, 101, 101, 0.5);
+        }
+
+        .btn-delete:active {
+            transform: scale(1.05) rotate(0deg);
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            animation: fadeInUp 0.6s ease-out;
+            margin-bottom: 30px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e7ff;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1), inset 0 1px 3px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #ffffff 0%, #f7f9fc 100%);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 3px solid #667eea;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .result-box:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.25);
+            border-color: #764ba2;
+        }
+
+        footer {
+            padding: 20px 0;
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.9rem;
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe);
+            background-size: 400% 400%;
+            animation: gradientShiftReverse 15s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @keyframes gradientShiftReverse {
+            0% {
+                background-position: 100% 50%;
+            }
+            50% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+
+        footer a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><a href="https://linktr.ee/bonvicin.coaching" target="_blank" style="text-decoration: none; background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe); background-size: 400% 400%; animation: gradientShift 8s ease infinite; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Bonvi 🏃 Critical Speed Calculator</a></h1>
+        </header>
+
+        <div class="grid">
+            <!-- Input Section -->
+            <div class="card">
+                <h2>Inserisci i Dati dei Test</h2>
+                <div class="info-box">
+                    <strong>Istruzioni:</strong> Inserisci almeno 2 test (preferibilmente 3) con tempi e distanze diverse.
+                </div>
+
+                <div id="testsContainer">
+                    <div class="test-input" data-test="1">
+                        <div class="test-header">
+                            <h3>Test 1</h3>
+                            <button class="btn-delete" onclick="deleteTest(this)" title="Elimina test">🗑️</button>
+                        </div>
+                        <div class="input-row">
+                            <div>
+                                <label>Minuti</label>
+                                <input type="number" class="minutes-input" placeholder="4" min="0">
+                            </div>
+                            <div>
+                                <label>Secondi</label>
+                                <input type="number" class="seconds-input" placeholder="00" min="0" max="59">
+                            </div>
+                            <div>
+                                <label>Distanza (metri)</label>
+                                <input type="number" class="distance-input" placeholder="es. 1000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="test-input" data-test="2">
+                        <div class="test-header">
+                            <h3>Test 2</h3>
+                            <button class="btn-delete" onclick="deleteTest(this)" title="Elimina test">🗑️</button>
+                        </div>
+                        <div class="input-row">
+                            <div>
+                                <label>Minuti</label>
+                                <input type="number" class="minutes-input" placeholder="10" min="0">
+                            </div>
+                            <div>
+                                <label>Secondi</label>
+                                <input type="number" class="seconds-input" placeholder="00" min="0" max="59">
+                            </div>
+                            <div>
+                                <label>Distanza (metri)</label>
+                                <input type="number" class="distance-input" placeholder="es. 2000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="test-input" data-test="3">
+                        <div class="test-header">
+                            <h3>Test 3</h3>
+                            <button class="btn-delete" onclick="deleteTest(this)" title="Elimina test">🗑️</button>
+                        </div>
+                        <div class="input-row">
+                            <div>
+                                <label>Minuti</label>
+                                <input type="number" class="minutes-input" placeholder="14" min="0">
+                            </div>
+                            <div>
+                                <label>Secondi</label>
+                                <input type="number" class="seconds-input" placeholder="00" min="0" max="59">
+                            </div>
+                            <div>
+                                <label>Distanza (metri)</label>
+                                <input type="number" class="distance-input" placeholder="es. 4000">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="addTest()" style="background: linear-gradient(-45deg, #68d391, #48bb78, #68d391, #48bb78); background-size: 300% 300%; animation: gradientCycle 3s ease infinite; margin-bottom: 10px; padding: 12px 24px;">➕ Aggiungi Test</button>
+                <button class="btn" onclick="calculate()">🚀 Calcola Critical Speed</button>
+            </div>
+
+            <!-- Results Section -->
+            <div class="card">
+                <h2>Risultati</h2>
+                <div class="results-grid" id="resultsContainer">
+                    <div class="result-box">
+                        <div class="result-label">Critical Speed</div>
+                        <div class="result-value" id="csKMH">-</div>
+                        <div class="result-unit">km/h</div>
+                    </div>
+                    <div class="result-box">
+                        <div class="result-label">Passo Critical Speed</div>
+                        <div class="result-value" id="pace">-</div>
+                        <div class="result-unit">min/km</div>
+                    </div>
+                    <div class="result-box">
+                        <div class="result-label">D'</div>
+                        <div class="result-value" id="dPrime">-</div>
+                        <div class="result-unit">metri</div>
+                    </div>
+                </div>
+
+                <div id="mainChart"></div>
+
+                <div class="predictor">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">Predici un Tempo</h3>
+                    <div class="predictor-input">
+                        <div>
+                            <label>Distanza Target (metri)</label>
+                            <input type="number" id="targetDistance" placeholder="10000" value="10000">
+                        </div>
+                        <div>
+                            <button class="btn" onclick="predictTime()">Calcola Tempo Previsto</button>
+                        </div>
+                    </div>
+                    <div id="predictionResult" class="prediction-result"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="card full-width">
+            <h2>Analisi Velocità - Distanza</h2>
+            <div id="distanceChart"></div>
+        </div>
+
+        <!-- Training Zones Section -->
+        <div class="card full-width">
+            <h2>Zone di Allenamento</h2>
+            <div class="info-box">
+                <strong>Zone basate sulla Critical Speed:</strong> zone ispirate al modello 80:20.
+            </div>
+            <div id="zonesContainer" class="zones-grid">
+                <!-- Zones will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let criticalSpeed = 0;
+        let dPrime = 0;
+        let mainChart = null;
+        let distanceChart = null;
+        let testCount = 3;
+        let currentTests = [];
+        let currentRegression = null;
+
+        // Initialize charts
+        window.onload = function() {
+            mainChart = echarts.init(document.getElementById('mainChart'));
+            distanceChart = echarts.init(document.getElementById('distanceChart'));
+            
+            window.addEventListener('resize', function() {
+                mainChart.resize();
+                distanceChart.resize();
+            });
+
+            // Don't calculate initially - wait for user input
+        };
+
+        function addTest() {
+            testCount++;
+            const container = document.getElementById('testsContainer');
+            const newTest = document.createElement('div');
+            newTest.className = 'test-input';
+            newTest.setAttribute('data-test', testCount);
+            newTest.innerHTML = `
+                <div class="test-header">
+                    <h3>Test ${testCount}</h3>
+                    <button class="btn-delete" onclick="deleteTest(this)" title="Elimina test">🗑️</button>
+                </div>
+                <div class="input-row">
+                    <div>
+                        <label>Minuti</label>
+                        <input type="number" class="minutes-input" placeholder="0" min="0">
+                    </div>
+                    <div>
+                        <label>Secondi</label>
+                        <input type="number" class="seconds-input" placeholder="0" min="0" max="59">
+                    </div>
+                    <div>
+                        <label>Distanza (metri)</label>
+                        <input type="number" class="distance-input" placeholder="5000">
+                    </div>
+                </div>
+            `;
+            container.appendChild(newTest);
+            
+            // Animate the new test
+            newTest.style.opacity = '0';
+            newTest.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                newTest.style.transition = 'all 0.5s ease';
+                newTest.style.opacity = '1';
+                newTest.style.transform = 'translateY(0)';
+            }, 10);
+        }
+
+        function deleteTest(button) {
+            const testInput = button.closest('.test-input');
+            const container = document.getElementById('testsContainer');
+            
+            // Check if there are at least 2 tests remaining
+            const remainingTests = container.querySelectorAll('.test-input').length;
+            if (remainingTests <= 2) {
+                alert('Devi mantenere almeno 2 test!');
+                return;
+            }
+            
+            // Animate removal
+            testInput.style.transition = 'all 0.3s ease';
+            testInput.style.opacity = '0';
+            testInput.style.transform = 'translateX(-20px)';
+            
+            setTimeout(() => {
+                testInput.remove();
+            }, 300);
+        }
+
+        function linearRegression(x, y) {
+            const n = x.length;
+            const sumX = x.reduce((a, b) => a + b, 0);
+            const sumY = y.reduce((a, b) => a + b, 0);
+            const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+            const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+
+            const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+
+            // Calculate R²
+            const yMean = sumY / n;
+            const ssTotal = y.reduce((sum, yi) => sum + Math.pow(yi - yMean, 2), 0);
+            const ssResidual = y.reduce((sum, yi, i) => {
+                const yPredicted = slope * x[i] + intercept;
+                return sum + Math.pow(yi - yPredicted, 2);
+            }, 0);
+            const rSquared = 1 - (ssResidual / ssTotal);
+
+            return { slope, intercept, rSquared };
+        }
+
+        function calculate() {
+            const tests = [];
+            const testInputs = document.querySelectorAll('.test-input');
+
+            testInputs.forEach(testDiv => {
+                const minutes = parseFloat(testDiv.querySelector('.minutes-input').value) || 0;
+                const seconds = parseFloat(testDiv.querySelector('.seconds-input').value) || 0;
+                const distance = parseFloat(testDiv.querySelector('.distance-input').value);
+
+                const time = minutes * 60 + seconds;
+
+                if (time && distance && time > 0 && distance > 0) {
+                    tests.push({ time, distance, minutes, seconds });
+                }
+            });
+
+            if (tests.length < 2) {
+                alert('Inserisci almeno 2 test validi!');
+                return;
+            }
+
+            // Extract time and distance arrays
+            const times = tests.map(t => t.time);
+            const distances = tests.map(t => t.distance);
+
+            // Calculate Critical Speed using linear regression
+            // CS = slope of distance vs time
+            const regression = linearRegression(times, distances);
+            criticalSpeed = regression.slope;
+            dPrime = regression.intercept;
+
+            // Update results
+            document.getElementById('csKMH').textContent = (criticalSpeed * 3.6).toFixed(2);
+            
+            const paceMinPerKm = 60 / (criticalSpeed * 3.6);
+            const paceMin = Math.floor(paceMinPerKm);
+            const paceSec = Math.round((paceMinPerKm - paceMin) * 60);
+            document.getElementById('pace').textContent = `${paceMin}:${paceSec.toString().padStart(2, '0')}`;
+            
+            document.getElementById('dPrime').textContent = dPrime.toFixed(0);
+
+            // Update charts
+            currentTests = tests;
+            currentRegression = regression;
+            updateMainChart(tests, regression);
+            updateDistanceChart(tests);
+            updateTrainingZones();
+
+            // Auto-scroll to the main chart with smooth animation
+            setTimeout(() => {
+                const chartElement = document.getElementById('mainChart');
+                chartElement.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center'
+                });
+            }, 300);
+        }
+
+        function updateMainChart(tests, regression) {
+            updateMainChartDistanceTime(tests, regression);
+        }
+
+        function updateMainChartDistanceTime(tests, regression) {
+            const times = tests.map(t => t.time);
+            const distances = tests.map(t => t.distance);
+
+            // Generate regression line that intersects Y axis
+            const minTime = 0; // Start from 0 to show D' intercept
+            const maxTime = Math.max(...times) * 1.1;
+            const regressionLine = [];
+            const paceTheoreticalCurve = [];
+            
+            // Generate more points for smoother curves
+            for (let t = minTime; t <= maxTime; t += maxTime / 100) {
+                regressionLine.push([t, regression.slope * t + regression.intercept]);
+                
+                // Theoretical pace curve (showing how pace changes with distance)
+                const dist = regression.slope * t + regression.intercept;
+                if (dist > 0 && t > 0) {
+                    const pace = t / (dist / 1000); // min/km
+                    paceTheoreticalCurve.push([t, pace * 1000]); // Scale for visibility
+                }
+            }
+
+            const option = {
+                backgroundColor: 'transparent',
+                title: {
+                    text: 'Relazione Distanza-Tempo',
+                    left: 'center',
+                    textStyle: {
+                        color: '#667eea',
+                        fontSize: 20,
+                        fontWeight: 'bold'
+                    }
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                    borderColor: '#667eea',
+                    borderWidth: 2,
+                    textStyle: {
+                        color: '#333'
+                    },
+                    axisPointer: {
+                        type: 'cross',
+                        lineStyle: {
+                            color: '#667eea',
+                            type: 'dashed'
+                        }
+                    },
+                    formatter: function(params) {
+                        let result = `Tempo: ${formatTime(params[0].value[0])}<br/>`;
+                        params.forEach(param => {
+                            if (param.seriesName === 'Test Effettuati') {
+                                const speed = (param.value[1] / param.value[0] * 3.6).toFixed(2);
+                                const pace = (60 / (param.value[1] / param.value[0] * 3.6));
+                                const pMin = Math.floor(pace);
+                                const pSec = Math.round((pace - pMin) * 60);
+                                result += `Distanza: ${param.value[1].toFixed(0)}m<br/>`;
+                                result += `Velocità: ${speed} km/h<br/>`;
+                                result += `Passo: ${pMin}:${pSec.toString().padStart(2, '0')} min/km`;
+                            } else if (param.seriesName === 'Critical Speed Line') {
+                                result += `Distanza CS: ${param.value[1].toFixed(0)}m`;
+                            }
+                        });
+                        return result;
+                    }
+                },
+                legend: {
+                    data: ['Test Effettuati', 'Critical Speed Line', 'D\' Intercept'],
+                    top: 35,
+                    textStyle: {
+                        color: '#667eea',
+                        fontSize: 11,
+                        fontWeight: 'bold',
+                        fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'
+                    }
+                },
+                grid: {
+                    left: '12%',
+                    right: '8%',
+                    bottom: '15%',
+                    top: '20%'
+                },
+                xAxis: {
+                    name: 'Tempo (min:sec)',
+                    nameLocation: 'middle',
+                    nameGap: 35,
+                    nameTextStyle: {
+                        fontSize: 12,
+                        fontWeight: 'bold',
+                        fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+                        color: '#667eea'
+                    },
+                    type: 'value',
+                    axisLine: {
+                        lineStyle: { color: '#667eea', width: 2 }
+                    },
+                    axisLabel: {
+                        fontSize: 11,
+                        fontWeight: 'bold',
+                        fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+                        color: '#667eea',
+                        formatter: function(value) {
+                            return formatTime(value);
+                        }
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            type: 'dashed',
+                            color: '#e0e7ff'
+                        }
+                    }
+                },
+                yAxis: {
+                    name: 'Distanza (m)',
+                    nameTextStyle: {
+                        fontSize: 12,
+                        fontWeight: 'bold',
+                        fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+                        color: '#667eea'
+                    },
+                    type: 'value',
+                    axisLine: {
+                        lineStyle: { color: '#667eea', width: 2 }
+                    },
+                    axisLabel: {
+                        fontSize: 11,
+                        fontWeight: 'bold',
+                        fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+                        color: '#667eea'
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            type: 'dashed',
+                            color: '#e0e7ff'
+                        }
+                    }
+                },
+                series: [
+                    {
+                        name: 'Test Effettuati',
+                        type: 'scatter',
+                        symbolSize: 25,
+                        data: times.map((t, i) => [t, distances[i]]),
+                        itemStyle: {
+                            color: '#764ba2',
+                            shadowBlur: 15,
+                            shadowColor: 'rgba(118, 75, 162, 0.6)',
+                            borderColor: '#fff',
+                            borderWidth: 3
+                        },
+                        label: {
+                            show: true,
+                            position: 'top',
+                            formatter: function(params) {
+                                return formatTime(params.value[0]);
+                            },
+                            color: '#764ba2',
+                            fontWeight: 'bold',
+                            fontSize: 11
+                        },
+                        animationDelay: (idx) => idx * 100,
+                        z: 3
+                    },
+                    {
+                        name: 'Critical Speed Line',
+                        type: 'line',
+                        data: regressionLine,
+                        lineStyle: {
+                            color: '#667eea',
+                            width: 4,
+                            type: 'solid',
+                            shadowBlur: 10,
+                            shadowColor: 'rgba(102, 126, 234, 0.5)'
+                        },
+                        itemStyle: {
+                            color: '#667eea'
+                        },
+                        showSymbol: false,
+                        animationDelay: 300,
+                        z: 2
+                    },
+                    {
+                        name: 'D\' Intercept',
+                        type: 'scatter',
+                        data: [[0, dPrime]],
+                        symbolSize: 30,
+                        itemStyle: {
+                            color: '#ff6b6b',
+                            shadowBlur: 15,
+                            shadowColor: 'rgba(255, 107, 107, 0.6)',
+                            borderColor: '#fff',
+                            borderWidth: 3
+                        },
+                        label: {
+                            show: true,
+                            position: 'right',
+                            formatter: `D' = ${dPrime.toFixed(0)}m`,
+                            color: '#ff6b6b',
+                            fontWeight: 'bold',
+                            fontSize: 13
+                        },
+                        animationDelay: 500,
+                        z: 3
+                    }
+                ],
+                animationEasing: 'elasticOut',
+                animationDuration: 1200
+            };
+
+            mainChart.setOption(option, true);
+        }
+
+        function updateDistanceChart(tests) {
+            const distances = tests.map(t => t.distance);
+            const times = tests.map(t => t.time);
+            const speedsKmh = tests.map(t => (t.distance / t.time * 3.6).toFixed(2));
+            const paces = tests.map(t => {
+                const pace = 60 / (t.distance / t.time * 3.6);
+                const pMin = Math.floor(pace);
+                const pSec = Math.round((pace - pMin) * 60);
+                return `${pMin}:${pSec.toString().padStart(2, '0')}`;
+            });
+
+            const option = {
+                backgroundColor: 'transparent',
+                title: {
+                    text: 'Velocità e Passo per Distanza',
+                    left: 'center',
+                    textStyle: {
+                        color: '#667eea',
+                        fontSize: 20,
+                        fontWeight: 'bold'
+                    }
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                    borderColor: '#667eea',
+                    borderWidth: 2,
+                    textStyle: {
+                        color: '#333'
+                    },
+                    axisPointer: {
+                        type: 'shadow',
+                        shadowStyle: {
+                            color: 'rgba(102, 126, 234, 0.1)'
+                        }
+                    },
+                    formatter: function(params) {
+                        const idx = params[0].dataIndex;
+                        return `Distanza: ${params[0].value[0]}m<br/>
+                                Tempo: ${formatTime(times[idx])}<br/>
+                                Velocità: ${params[0].value[1]} km/h<br/>
+                                Passo: ${paces[idx]} min/km`;
+                    }
+                },
+                legend: {
+                    data: ['Test', 'CS curve', 'Critical Speed'],
+                    top: 35,
+                    textStyle: {
+                        color: '#667eea',
+                        fontSize: 11,
+                        fontWeight: 'bold',
+                        fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'
+                    }
+                },
+                grid: {
+                    left: '15%',
+                    right: '15%',
+                    bottom: '15%',
+                    top: '20%'
+                },
+                xAxis: {
+                    name: 'Distanza (m)',
+                    nameTextStyle: {
+                        fontSize: 12,
+                        fontWeight: 'bold',
+                        fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+                        color: '#667eea'
+                    },
+                    type: 'value',
+                    min: 0,
+                    max: function(value) {
+                        const maxDist = Math.max(...distances);
+                        const minDist = Math.min(...distances);
+                        const extraSpace = minDist; // stesso spazio a sinistra della prima barra
+                        return Math.ceil(maxDist + extraSpace);
+                    },
+                    axisLine: {
+                        lineStyle: { color: '#667eea', width: 2 }
+                    },
+                    axisLabel: {
+                        fontSize: 11,
+                        fontWeight: 'bold',
+                        fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+                        color: '#667eea',
+                        formatter: function(value) {
+                            return value % 1000 === 0 ? value + 'm' : '';
+                        }
+                    },
+                    splitLine: {
+                        show: false
+                    }
+                },
+                yAxis: {
+                    name: 'Velocità (km/h)',
+                    nameTextStyle: {
+                        fontSize: 12,
+                        fontWeight: 'bold',
+                        fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+                        color: '#667eea'
+                    },
+                    type: 'value',
+                    min: function(value) {
+                        return Math.max(0, Math.floor(Math.min(...speedsKmh) * 0.8));
+                    },
+                    max: function(value) {
+                        return Math.ceil(Math.max(...speedsKmh) * 1.1);
+                    },
+                    axisLine: {
+                        lineStyle: { color: '#667eea', width: 2 }
+                    },
+                    axisLabel: {
+                        fontSize: 11,
+                        fontWeight: 'bold',
+                        fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+                        color: '#667eea',
+                        formatter: function(value) {
+                            return value % 2 === 0 ? value + ' km/h' : '';
+                        }
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            type: 'dashed',
+                            color: '#e0e7ff'
+                        }
+                    }
+                },
+                series: [
+                    {
+                        name: 'Test',
+                        type: 'bar',
+                        data: distances.map((d, i) => [d, parseFloat(speedsKmh[i])]),
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: '#667eea' },
+                                { offset: 0.5, color: '#764ba2' },
+                                { offset: 1, color: '#9f7aea' }
+                            ]),
+                            borderRadius: [10, 10, 0, 0],
+                            shadowBlur: 15,
+                            shadowColor: 'rgba(102, 126, 234, 0.4)'
+                        },
+                        animationDelay: (idx) => idx * 100,
+                        label: {
+                            show: true,
+                            position: 'top',
+                            formatter: function(params) {
+                                return `${params.value[1]} km/h\n${paces[params.dataIndex]}`;
+                            },
+                            color: '#667eea',
+                            fontWeight: 'bold',
+                            fontSize: 11
+                        },
+                        barWidth: '30%'
+                    },
+                    {
+                        name: 'CS curve',
+                        type: 'line',
+                        data: function() {
+                            const points = [];
+                            const minDist = Math.min(...distances);
+                            const maxDist = Math.ceil(Math.max(...distances) + Math.min(...distances));
+                            const dPrime = currentRegression ? currentRegression.intercept : 0;
+                            for (let d = minDist; d <= maxDist; d += 50) {
+                                if (d > dPrime) {
+                                    const velocity = criticalSpeed * d / (d - dPrime) * 3.6;
+                                    points.push([d, velocity]);
+                                }
+                            }
+                            return points;
+                        }(),
+                        lineStyle: {
+                            color: '#667eea',
+                            width: 3,
+                            shadowBlur: 10,
+                            shadowColor: 'rgba(102, 126, 234, 0.5)'
+                        },
+                        itemStyle: {
+                            color: '#667eea',
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        },
+                        symbolSize: 0,
+                        smooth: true,
+                        z: 2
+                    },
+                    {
+                        name: 'Critical Speed',
+                        type: 'line',
+                        data: function() {
+                            const minDist = 0;
+                            const maxDist = Math.ceil(Math.max(...distances) + Math.min(...distances));
+                            return [[minDist, criticalSpeed * 3.6], [maxDist, criticalSpeed * 3.6]];
+                        }(),
+                        lineStyle: {
+                            color: '#ff6b6b',
+                            width: 2,
+                            type: 'dashed',
+                            shadowBlur: 5,
+                            shadowColor: 'rgba(255, 107, 107, 0.3)'
+                        },
+                        itemStyle: {
+                            color: '#ff6b6b',
+                            borderWidth: 3,
+                            borderColor: '#fff'
+                        },
+                        symbolSize: 0,
+                        animationDelay: 500,
+                        label: {
+                            show: true,
+                            position: 'end',
+                            formatter: `CS`,
+                            color: '#ff6b6b',
+                            fontWeight: 'bold',
+                            fontSize: 10
+                        },
+                        z: 3
+                    }
+                ],
+                animationEasing: 'elasticOut',
+                animationDuration: 1200
+            };
+
+            distanceChart.setOption(option);
+        }
+
+        function updateTrainingZones() {
+            const zones = [
+                { name: 'Z1 - Recupero', range: '0-76%', min: 0, max: 0.76, class: 'zone-1' },
+                { name: 'Z2 - Aerobico', range: '77-87%', min: 0.77, max: 0.87, class: 'zone-2' },
+                { name: 'Z3 - Tempo', range: '88-93%', min: 0.88, max: 0.93, class: 'zone-3' },
+                { name: 'Z4 - Soglia', range: '94-102%', min: 0.94, max: 1.02, class: 'zone-4' },
+                { name: 'Z5 - VO2max', range: '103-115%', min: 1.03, max: 1.15, class: 'zone-5' },
+                { name: 'Z6 - Anaerobico', range: '116%+', min: 1.16, max: 1.30, class: 'zone-6' }
+            ];
+
+            const container = document.getElementById('zonesContainer');
+            container.innerHTML = '';
+
+            zones.forEach((zone, index) => {
+                const minSpeed = criticalSpeed * zone.min * 3.6;
+                const maxSpeed = criticalSpeed * zone.max * 3.6;
+                
+                const minPace = 60 / minSpeed;
+                const maxPace = 60 / maxSpeed;
+                
+                const zoneCard = document.createElement('div');
+                zoneCard.className = `zone-card ${zone.class}`;
+                zoneCard.style.animationDelay = `${index * 0.1}s`;
+                zoneCard.style.animation = 'fadeInUp 0.6s ease-out backwards';
+                
+                let paceDisplay;
+                if (index === 0) {
+                    // Z1 - show only slower pace with +
+                    const slowPaceMin = Math.floor(maxPace);
+                    const slowPaceSec = Math.round((maxPace - slowPaceMin) * 60);
+                    paceDisplay = `⏱️ ${slowPaceMin}:${slowPaceSec.toString().padStart(2, '0')}+`;
+                } else if (index === 5) {
+                    // Z6 - show only faster pace with <
+                    const fastPaceMin = Math.floor(maxPace);
+                    const fastPaceSec = Math.round((maxPace - fastPaceMin) * 60);
+                    paceDisplay = `⏱️ <${fastPaceMin}:${fastPaceSec.toString().padStart(2, '0')}`;
+                } else {
+                    // Other zones - show range
+                    const minPaceMin = Math.floor(maxPace);
+                    const minPaceSec = Math.round((maxPace - minPaceMin) * 60);
+                    const maxPaceMin = Math.floor(minPace);
+                    const maxPaceSec = Math.round((minPace - maxPaceMin) * 60);
+                    paceDisplay = `⏱️ ${maxPaceMin}:${maxPaceSec.toString().padStart(2, '0')} - ${minPaceMin}:${minPaceSec.toString().padStart(2, '0')}`;
+                }
+                
+                zoneCard.innerHTML = `
+                    <div class="zone-name">${zone.name}</div>
+                    <div class="zone-range">${zone.range} CS</div>
+                    <div class="zone-pace" style="font-size: 1.5rem; font-weight: 700; margin: 15px 0;">${paceDisplay}</div>
+                    <div class="zone-pace" style="font-size: 0.9rem; opacity: 0.85;">min/km</div>
+                `;
+                
+                container.appendChild(zoneCard);
+            });
+        }
+
+        function predictTime() {
+            if (criticalSpeed === 0) {
+                alert('Calcola prima la Critical Speed!');
+                return;
+            }
+
+            const targetDistance = parseFloat(document.getElementById('targetDistance').value);
+            
+            if (!targetDistance || targetDistance <= 0) {
+                alert('Inserisci una distanza valida!');
+                return;
+            }
+
+            // Time = (Distance - D') / CS
+            const predictedTime = (targetDistance - dPrime) / criticalSpeed;
+            
+            const minutes = Math.floor(predictedTime / 60);
+            const seconds = Math.round(predictedTime % 60);
+            
+            const avgSpeed = targetDistance / predictedTime;
+            const avgPace = 60 / (avgSpeed * 3.6);
+            const paceMin = Math.floor(avgPace);
+            const paceSec = Math.round((avgPace - paceMin) * 60);
+
+            const resultDiv = document.getElementById('predictionResult');
+            resultDiv.innerHTML = `
+                <div style="font-size: 1.8rem; margin-bottom: 15px;">
+                    Tempo Previsto: ${minutes}:${seconds.toString().padStart(2, '0')}
+                </div>
+                <div style="font-size: 1.1rem; opacity: 0.95;">
+                    Passo medio: ${paceMin}:${paceSec.toString().padStart(2, '0')} min/km
+                </div>
+                <div style="font-size: 1.1rem; opacity: 0.95; margin-top: 5px;">
+                    Velocità: ${(avgSpeed * 3.6).toFixed(2)} km/h
+                </div>
+            `;
+            resultDiv.classList.add('show');
+
+            // Auto-scroll to the prediction result with smooth animation
+            setTimeout(() => {
+                resultDiv.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center'
+                });
+            }, 300);
+        }
+
+        // Convert time helper
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.round(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+    </script>
+
+    <footer>
+        <div class="container">
+            <a href="https://linktr.ee/bonvicin.coaching" target="_blank" style="text-decoration: none;">
+                <p>&copy; 2026 Andrea Bonvicin - Critical Speed Calculator - Licenza MIT</p>
+            </a>
+        </div>
+    </footer>
+</body>
+</html>
