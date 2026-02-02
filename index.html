@@ -83,7 +83,7 @@
         .card {
             background: white;
             border-radius: 20px;
-            padding: 30px;
+            padding: 25px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.1);
             animation: fadeInUp 0.6s ease-out;
         }
@@ -118,7 +118,7 @@
 
         .test-input h3 {
             color: #667eea;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             font-size: 1.1rem;
         }
 
@@ -138,7 +138,7 @@
 
         input[type="number"] {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 2px solid #e0e7ff;
             border-radius: 8px;
             font-size: 1rem;
@@ -410,7 +410,7 @@
         .test-input {
             background: linear-gradient(135deg, #f7f9fc 0%, #ffffff 100%);
             border-radius: 15px;
-            padding: 20px;
+            padding: 15px;
             margin-bottom: 15px;
             border: 2px solid #e0e7ff;
             transition: all 0.3s ease;
@@ -427,7 +427,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .test-input h3 {
@@ -437,7 +437,7 @@
             background-clip: text;
             font-size: 1.2rem;
             font-weight: 700;
-            margin: 0;
+            margin: 0 0 10px 0;
         }
 
         .btn-delete {
@@ -485,10 +485,10 @@
         .card {
             background: white;
             border-radius: 20px;
-            padding: 30px;
+            padding: 25px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.1);
             animation: fadeInUp 0.6s ease-out;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         input[type="number"] {
@@ -539,7 +539,7 @@
 
         footer {
             padding: 20px 0;
-            margin-top: 40px;
+            margin-top: 30px;
             text-align: center;
             font-size: 0.9rem;
             background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe);
@@ -565,6 +565,93 @@
         footer a {
             text-decoration: none;
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .modal h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .modal p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .modal-btn {
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #667eea);
+            background-size: 300% 300%;
+            animation: gradientCycle 3s ease infinite;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
     </style>
 </head>
 <body>
@@ -578,7 +665,7 @@
             <div class="card">
                 <h2>Inserisci i Dati dei Test</h2>
                 <div class="info-box">
-                    <strong>Istruzioni:</strong> Inserisci almeno 2 test (preferibilmente 3) con tempi e distanze diverse.
+                    <strong>Inserisci almeno 2 test (preferibilmente 3) con tempi e distanze diverse</strong> 
                 </div>
 
                 <div id="testsContainer">
@@ -699,7 +786,7 @@
         <div class="card full-width">
             <h2>Zone di Allenamento</h2>
             <div class="info-box">
-                <strong>Zone basate sulla Critical Speed:</strong> zone ispirate al modello 80:20.
+                <strong>Zone basate sulla Critical Speed ispirate al modello 80:20</strong>
             </div>
             <div id="zonesContainer" class="zones-grid">
                 <!-- Zones will be populated by JavaScript -->
@@ -774,7 +861,7 @@
             // Check if there are at least 2 tests remaining
             const remainingTests = container.querySelectorAll('.test-input').length;
             if (remainingTests <= 2) {
-                alert('Devi mantenere almeno 2 test!');
+                showModal('Devi mantenere almeno 2 test!');
                 return;
             }
             
@@ -827,7 +914,7 @@
             });
 
             if (tests.length < 2) {
-                alert('Inserisci almeno 2 test validi!');
+                showModal('Inserisci almeno 2 test validi!');
                 return;
             }
 
@@ -1087,7 +1174,7 @@
         function updateDistanceChart(tests) {
             const distances = tests.map(t => t.distance);
             const times = tests.map(t => t.time);
-            const speedsKmh = tests.map(t => (t.distance / t.time * 3.6).toFixed(2));
+            const speedsKmh = tests.map(t => parseFloat((t.distance / t.time * 3.6).toFixed(2)));
             const paces = tests.map(t => {
                 const pace = 60 / (t.distance / t.time * 3.6);
                 const pMin = Math.floor(pace);
@@ -1121,11 +1208,31 @@
                         }
                     },
                     formatter: function(params) {
-                        const idx = params[0].dataIndex;
-                        return `Distanza: ${params[0].value[0]}m<br/>
-                                Tempo: ${formatTime(times[idx])}<br/>
-                                Velocità: ${params[0].value[1]} km/h<br/>
-                                Passo: ${paces[idx]} min/km`;
+                        const param = params[0];
+                        const distance = param.value[0];
+                        const velocity = param.value[1];
+                        
+                        if (param.seriesName === 'Test') {
+                            // Per le barre dei test, usa i dati originali
+                            const idx = param.dataIndex;
+                            return `Distanza: ${distance}m<br/>
+                                    Tempo: ${formatTime(times[idx])}<br/>
+                                    Velocità: ${velocity.toFixed(2)} km/h<br/>
+                                    Passo: ${paces[idx]} min/km`;
+                        } else if (param.seriesName === 'CS curve') {
+                            // Per la curva CS, calcola tempo e passo al volo
+                            const timeSeconds = distance / (velocity / 3.6); // Converti km/h in m/s
+                            const pace = 60 / velocity;
+                            const pMin = Math.floor(pace);
+                            const pSec = Math.round((pace - pMin) * 60);
+                            const paceStr = `${pMin}:${pSec.toString().padStart(2, '0')}`;
+                            return `Distanza: ${distance}m<br/>
+                                    Tempo: ${formatTime(timeSeconds)}<br/>
+                                    Velocità: ${velocity.toFixed(2)} km/h<br/>
+                                    Passo: ${paceStr} min/km<br/>
+                                    <small>(Curva Critical Speed)</small>`;
+                        }
+                        return `Distanza: ${distance}m<br/>Velocità: ${velocity.toFixed(2)} km/h`;
                     }
                 },
                 legend: {
@@ -1230,7 +1337,7 @@
                             show: true,
                             position: 'top',
                             formatter: function(params) {
-                                return `${params.value[1]} km/h\n${paces[params.dataIndex]}`;
+                                return `${params.value[1].toFixed(1)} km/h\n${paces[params.dataIndex]}`;
                             },
                             color: '#667eea',
                             fontWeight: 'bold',
@@ -1246,10 +1353,14 @@
                             const minDist = Math.min(...distances);
                             const maxDist = Math.ceil(Math.max(...distances) + Math.min(...distances));
                             const dPrime = currentRegression ? currentRegression.intercept : 0;
+                            const maxVelocity = Math.max(...speedsKmh) * 2; // Limite ragionevole
+                            
                             for (let d = minDist; d <= maxDist; d += 50) {
-                                if (d > dPrime) {
+                                if (d > dPrime && d - dPrime > 1) { // Evita divisioni per zero o valori troppo piccoli
                                     const velocity = criticalSpeed * d / (d - dPrime) * 3.6;
-                                    points.push([d, velocity]);
+                                    if (velocity > 0 && velocity < maxVelocity && isFinite(velocity)) {
+                                        points.push([d, velocity]);
+                                    }
                                 }
                             }
                             return points;
@@ -1367,14 +1478,14 @@
 
         function predictTime() {
             if (criticalSpeed === 0) {
-                alert('Calcola prima la Critical Speed!');
+                showModal('Calcola prima la Critical Speed!');
                 return;
             }
 
             const targetDistance = parseFloat(document.getElementById('targetDistance').value);
             
             if (!targetDistance || targetDistance <= 0) {
-                alert('Inserisci una distanza valida!');
+                showModal('Inserisci una distanza valida!');
                 return;
             }
 
@@ -1418,6 +1529,37 @@
             const secs = Math.round(seconds % 60);
             return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
+
+        // Custom modal functions
+        function showModal(message, title = 'Attenzione', icon = '⚠️') {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.querySelector('.modal-icon').textContent = icon;
+            document.getElementById('customModal').classList.add('show');
+            
+            // Add event listeners for closing
+            document.addEventListener('keydown', handleEscape);
+            document.getElementById('customModal').addEventListener('click', handleOutsideClick);
+        }
+
+        function closeModal() {
+            document.getElementById('customModal').classList.remove('show');
+            // Remove event listeners
+            document.removeEventListener('keydown', handleEscape);
+            document.getElementById('customModal').removeEventListener('click', handleOutsideClick);
+        }
+
+        function handleEscape(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        }
+
+        function handleOutsideClick(event) {
+            if (event.target.id === 'customModal') {
+                closeModal();
+            }
+        }
     </script>
 
     <footer>
@@ -1427,5 +1569,16 @@
             </a>
         </div>
     </footer>
+
+    <!-- Custom Modal -->
+    <div id="customModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-icon">⚠️</span>
+            <h3 id="modalTitle">Attenzione</h3>
+            <p id="modalMessage">Messaggio di avviso</p>
+            <button class="modal-btn" onclick="closeModal()">OK</button>
+        </div>
+    </div>
+
 </body>
 </html>
